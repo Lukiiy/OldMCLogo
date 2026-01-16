@@ -132,10 +132,12 @@ public class TitleScreenMixin {
 
                     GL11.glTranslatef(x, y, z);
                     GL11.glScalef(scale, scale, scale);
-                    GL11.glColor4f(1, 1, 1, 1);
+                    OldLogo.isLogoRendering = true;
 
                     blockRenderer.method_48(Block.STONE, 0, .77f);
 
+                    OldLogo.isLogoRendering = false;
+                    GL11.glColor4f(1, 1, 1, 1);
                     GL11.glPopMatrix();
                 }
             }

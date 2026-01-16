@@ -9,6 +9,8 @@ public class OldLogo implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("oldlogo");
     public static Minecraft minecraft;
 
+    public static boolean isLogoRendering = false;
+
     @Override
     public void onInitialize() {}
 }

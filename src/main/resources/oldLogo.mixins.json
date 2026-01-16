@@ -4,6 +4,7 @@
   "package": "me.lukiiy.oldLogo.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "BlockRendererMixin",
     "MinecraftMixin",
     "TitleScreenMixin"
   ],
