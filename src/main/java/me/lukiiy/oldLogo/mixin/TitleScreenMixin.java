@@ -6,7 +6,9 @@ import net.minecraft.block.Block;
 import net.minecraft.class_564;
 import net.minecraft.class_13;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.render.Tessellator;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.spongepowered.asm.mixin.Final;
@@ -153,5 +155,10 @@ public class TitleScreenMixin {
         GL11.glViewport(0, 0, minecraft.displayWidth, minecraft.displayHeight);
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopAttrib();
+    }
+
+    @Redirect(method = "render(IIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;renderBackground()V"))
+    private void oldlogo$replaceBackground(TitleScreen screen) {
+        OldLogo.renderScrollingBackground(screen);
     }
 }
