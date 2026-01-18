@@ -156,9 +156,4 @@ public class TitleScreenMixin {
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopAttrib();
     }
-
-    @Redirect(method = "render(IIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;renderBackground()V"))
-    private void oldlogo$replaceBackground(TitleScreen screen) {
-        OldLogo.renderScrollingBackground(screen);
-    }
 }
