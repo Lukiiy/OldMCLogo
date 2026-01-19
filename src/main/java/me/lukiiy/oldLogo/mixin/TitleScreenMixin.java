@@ -6,9 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.class_564;
 import net.minecraft.class_13;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.render.Tessellator;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.spongepowered.asm.mixin.Final;
@@ -76,10 +74,10 @@ public class TitleScreenMixin {
         GL11.glLoadIdentity();
 
         class_564 scaledRes = new class_564(minecraft.options, minecraft.displayWidth, minecraft.displayHeight);
-        int viewportHeight = 120 * scaledRes.field_2391;
+        int viewHeight = 120 * scaledRes.field_2391;
 
-        GLU.gluPerspective(70, (float) minecraft.displayWidth / (float) viewportHeight, .05f, 100);
-        GL11.glViewport(0, minecraft.displayHeight - viewportHeight, minecraft.displayWidth, viewportHeight);
+        GLU.gluPerspective(70, (float) minecraft.displayWidth / (float) viewHeight, .05f, 100);
+        GL11.glViewport(0, minecraft.displayHeight - viewHeight, minecraft.displayWidth, viewHeight);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();

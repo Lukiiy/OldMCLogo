@@ -13,6 +13,7 @@ public class LogoEffectRandomizer {
 
     public void tick() {
         this.current = this.target;
+
         if (this.target > 0) velocity -= 0.6;
         this.target += velocity;
         velocity *= 0.9;

@@ -13,7 +13,7 @@ public class ScreenMixin {
     @Shadow protected Minecraft minecraft;
 
     @ModifyArgs(method = "renderBackgroundTexture(I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Tessellator;vertex(DDDDD)V"))
-    private void oldlogo$scrollBackground(Args args) {
+    private void oldLogo$scrollBackground(Args args) {
         args.set(4, (double) args.get(4) + ((MinecraftAccessor) minecraft).getTicks() * 0.01);
     }
 }
