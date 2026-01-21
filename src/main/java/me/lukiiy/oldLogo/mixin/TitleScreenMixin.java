@@ -25,20 +25,7 @@ public class TitleScreenMixin {
     @Shadow @Final private static Random RANDOM;
 
     @Unique
-    private static final String[] OLD_LOGO = new String[]{
-            " *   * * *   * *** *** *** *** *** ***",
-            " ** ** * **  * *   *   * * * * *    * ",
-            " * * * * * * * **  *   **  *** **   * ",
-            " *   * * *  ** *   *   * * * * *    * ",
-            " *   * * *   * *** *** * * * * *    * "
-    };
-
-    @Unique
     private LogoEffectRandomizer[][] logoEffects;
-
-    public TitleScreenMixin(LogoEffectRandomizer[][] logoEffects) {
-        this.logoEffects = logoEffects;
-    }
 
     @Redirect(method = "render(IIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;drawTexture(IIIIII)V"))
     private void oldLogo$cancelOriginal(TitleScreen instance, int x, int y, int u, int v, int w, int h) {
@@ -60,8 +47,11 @@ public class TitleScreenMixin {
     private void oldLogo$render(int mouseX, int mouseY, float delta, CallbackInfo ci) {
         Minecraft minecraft = OldLogo.minecraft;
 
+        String[] logo = OldLogo.logo;
+        if (OldLogo.logo == null || OldLogo.logo.length == 0) return;
+
         if (logoEffects == null) {
-            logoEffects = new LogoEffectRandomizer[OLD_LOGO[0].length()][OLD_LOGO.length];
+            logoEffects = new LogoEffectRandomizer[logo[0].length()][logo.length];
 
             for (int x = 0; x < logoEffects.length; x++) {
                 for (int y = 0; y < logoEffects[x].length; y++) logoEffects[x][y] = new LogoEffectRandomizer(RANDOM, x, y);
@@ -111,14 +101,20 @@ public class TitleScreenMixin {
             GL11.glScalef(1, -1, 1);
             GL11.glRotatef(15f, 1, 0, 0);
             GL11.glScalef(.89f, 1, .4f);
-            GL11.glTranslatef(-OLD_LOGO[0].length() * .5f, -OLD_LOGO.length * .5f, 0);
+            GL11.glTranslatef(-logo[0].length() * .5f, -logo.length * .5f, 0);
 
             if (pass == 0) GL11.glBindTexture(GL11.GL_TEXTURE_2D, minecraft.textureManager.getTextureId("/title/black.png"));
             else GL11.glBindTexture(GL11.GL_TEXTURE_2D, minecraft.textureManager.getTextureId("/terrain.png"));
 
-            for (int y = 0; y < OLD_LOGO.length; y++) {
-                for (int x = 0; x < OLD_LOGO[y].length(); x++) {
-                    if (OLD_LOGO[y].charAt(x) == ' ') continue;
+            OldLogo.isLogoRendering = true;
+
+            for (int y = 0; y < logo.length; y++) {
+                for (int x = 0; x < logo[y].length(); x++) {
+                    Integer id = OldLogo.blockMap.get(logo[y].charAt(x));
+                    if (id == null || id == 0) continue;
+
+                    Block block = id > 0 && id < Block.BLOCKS.length ? Block.BLOCKS[id] : null;
+                    if (block == null) continue;
 
                     GL11.glPushMatrix();
                     LogoEffectRandomizer effect = logoEffects[x][y];
@@ -132,15 +128,14 @@ public class TitleScreenMixin {
 
                     GL11.glTranslatef(x, y, z);
                     GL11.glScalef(scale, scale, scale);
-                    OldLogo.isLogoRendering = true;
 
-                    blockRenderer.method_48(Block.STONE, 0, .77f);
+                    blockRenderer.method_48(block, 0, .77f);
 
-                    OldLogo.isLogoRendering = false;
-                    GL11.glColor4f(1, 1, 1, 1);
                     GL11.glPopMatrix();
                 }
             }
+
+            OldLogo.isLogoRendering = false;
 
             GL11.glPopMatrix();
         }
