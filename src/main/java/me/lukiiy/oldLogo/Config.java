@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public class Config {
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().setFormattingStyle(FormattingStyle.PRETTY.withIndent("    ")).create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private JsonObject jsonObj = new JsonObject();
     private final File file;
 

@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "oldlogo",
   "version": "${version}",
-  "name": "Mini Multiplayer Patches",
-  "description": "A silly attempt at patching CLIENT-SIDE network related stuff on b1.7.3",
+  "name": "OldLogo",
+  "description": "Readds the silly block rendered logo from Minecraft Alpha versions!",
   "authors": [ "Lukiiy" ],
   "contact": {
     "sources": "https://github.com/Lukiiy/OldMCLogo",
