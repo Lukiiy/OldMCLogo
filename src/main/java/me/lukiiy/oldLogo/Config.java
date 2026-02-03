@@ -31,7 +31,7 @@ public class Config {
 
             if (jsonObj == null) jsonObj = new JsonObject();
         } catch (IOException e) {
-            e.printStackTrace();
+            OldLogo.LOGGER.error(e.getMessage());
         }
     }
 
@@ -39,7 +39,7 @@ public class Config {
         try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
             gson.toJson(jsonObj, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            OldLogo.LOGGER.error(e.getMessage());
         }
     }
 
