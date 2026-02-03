@@ -47,8 +47,8 @@ public class TitleScreenMixin {
     private void oldLogo$render(int mouseX, int mouseY, float delta, CallbackInfo ci) {
         Minecraft minecraft = OldLogo.minecraft;
 
-        String[] logo = OldLogo.logo;
-        if (OldLogo.logo == null || OldLogo.logo.length == 0) return;
+        String[] logo = OldLogo.logo.get();
+        if (logo == null || logo.length == 0) return;
 
         if (logoEffects == null) {
             logoEffects = new LogoEffectRandomizer[logo[0].length()][logo.length];
@@ -99,7 +99,12 @@ public class TitleScreenMixin {
             }
 
             GL11.glScalef(1, -1, 1);
-            GL11.glRotatef(15f, 1, 0, 0);
+
+            float[] rot = OldLogo.logoRotation.get();
+            GL11.glRotatef(rot[0], 1f, 0f, 0f); // X
+            GL11.glRotatef(rot[1], 0f, 1f, 0f); // Y
+            GL11.glRotatef(rot[2], 0f, 0f, 1f); // Z
+
             GL11.glScalef(.89f, 1, .4f);
             GL11.glTranslatef(-logo[0].length() * .5f, -logo.length * .5f, 0);
 
@@ -110,7 +115,7 @@ public class TitleScreenMixin {
 
             for (int y = 0; y < logo.length; y++) {
                 for (int x = 0; x < logo[y].length(); x++) {
-                    Integer id = OldLogo.blockMap.get(logo[y].charAt(x));
+                    Integer id = OldLogo.blockMap.get().get(logo[y].charAt(x));
                     if (id == null || id == 0) continue;
 
                     Block block = id > 0 && id < Block.BLOCKS.length ? Block.BLOCKS[id] : null;
@@ -128,6 +133,7 @@ public class TitleScreenMixin {
 
                     GL11.glTranslatef(x, y, z);
                     GL11.glScalef(scale, scale, scale);
+                    if (!OldLogo.invertedBlocks.get()) GL11.glRotatef(180f, 1, 0, 0);
 
                     blockRenderer.method_48(block, 0, .77f);
 

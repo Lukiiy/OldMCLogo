@@ -6,12 +6,10 @@ import net.minecraft.client.Minecraft;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Config {
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private JsonObject properties = new JsonObject();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().setFormattingStyle(FormattingStyle.PRETTY.withIndent("    ")).create();
+    private JsonObject jsonObj = new JsonObject();
     private final File file;
 
     public Config(String fileName) {
@@ -29,9 +27,9 @@ public class Config {
         }
 
         try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)) {
-            properties = gson.fromJson(reader, JsonObject.class);
+            jsonObj = gson.fromJson(reader, JsonObject.class);
 
-            if (properties == null) properties = new JsonObject();
+            if (jsonObj == null) jsonObj = new JsonObject();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,80 +37,62 @@ public class Config {
 
     public void save() {
         try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
-            gson.toJson(properties, writer);
+            gson.toJson(jsonObj, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public boolean has(String key) {
-        return properties.has(key);
+        return get(key) != null;
     }
 
-    public void set(String key, Object value) {
-        if (value instanceof String) properties.addProperty(key, (String) value);
-        else if (value instanceof Boolean) properties.addProperty(key, (Boolean) value);
-        else if (value instanceof Number) properties.addProperty(key, (Number) value);
-        else if (value instanceof String[]) {
-            JsonArray array = new JsonArray();
+    public JsonElement get(String key) {
+        String[] parts = key.split("\\.");
+        JsonElement current = jsonObj;
 
-            for (String s : (String[]) value) array.add(s);
-            properties.add(key, array);
+        for (String part : parts) {
+            if (!current.isJsonObject()) return null;
+
+            current = current.getAsJsonObject().get(part);
+            if (current == null) return null;
         }
 
+        return current;
+    }
+
+    public void set(String key, JsonElement value) {
+        JsonObject parent = getObjectPath(key);
+        String leaf = key.substring(key.lastIndexOf('.') + 1);
+
+        parent.add(leaf, value);
         save();
     }
 
-    public Object get(String key, Object defaultVal) { // omygod
-        if (!has(key)) set(key, defaultVal);
-
-        JsonElement elemeent = properties.get(key);
-        if (elemeent == null) return defaultVal;
-
-        if (defaultVal instanceof String) return elemeent.isJsonPrimitive() ? elemeent.getAsString() : defaultVal;
-        else if (defaultVal instanceof Boolean) return elemeent.isJsonPrimitive() ? elemeent.getAsBoolean() : defaultVal;
-        else if (defaultVal instanceof Integer) return elemeent.isJsonPrimitive() ? elemeent.getAsInt() : defaultVal;
-        else if (defaultVal instanceof Long) return elemeent.isJsonPrimitive() ? elemeent.getAsLong() : defaultVal;
-        else if (defaultVal instanceof String[]) {
-            if (!elemeent.isJsonArray()) return defaultVal;
-
-            JsonArray array = elemeent.getAsJsonArray();
-            String[] result = new String[array.size()];
-
-            for (int i = 0; i < array.size(); i++) result[i] = array.get(i).getAsString();
-            return result;
-        }
-
-        return defaultVal;
-    }
-
-    public void setIfAbsent(String key, Object value) {
+    public void setIfAbsent(String key, JsonElement value) {
         if (has(key)) return;
 
         set(key, value);
     }
 
-    public Map<Character, Integer> getCharMapping(String key, Map<Character, Integer> def) {
-        if (!has(key)) {
-            JsonObject obj = new JsonObject();
+    private JsonObject getObjectPath(String key) {
+        String[] parts = key.split("\\.");
+        JsonObject current = jsonObj;
 
-            for (Map.Entry<Character, Integer> e : def.entrySet()) obj.addProperty(String.valueOf(e.getKey()), e.getValue());
-            properties.add(key, obj);
-            save();
+        for (int i = 0; i < parts.length - 1; i++) {
+            String part = parts[i];
 
-            return new HashMap<>(def);
+            JsonElement next = current.get(part);
+            if (next == null || !next.isJsonObject()) {
+                JsonObject created = new JsonObject();
+
+                current.add(part, created);
+                current = created;
+            } else {
+                current = next.getAsJsonObject();
+            }
         }
 
-        JsonElement el = properties.get(key);
-        if (!el.isJsonObject()) return new HashMap<>(def);
-
-        Map<Character, Integer> map = new HashMap<>();
-        JsonObject obj = el.getAsJsonObject();
-
-        for (Map.Entry<String, JsonElement> e : obj.entrySet()) {
-            if (e.getKey().length() == 1 && e.getValue().isJsonPrimitive()) map.put(e.getKey().charAt(0), e.getValue().getAsInt());
-        }
-
-        return map;
+        return current;
     }
 }

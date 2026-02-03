@@ -1,50 +1,42 @@
 package me.lukiiy.oldLogo;
 
-import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class OldLogo implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("oldlogo");
     public static Minecraft minecraft;
-    private static final Config CONFIG = new Config("oldLogo");
+    public static final Config CONFIG = new Config("oldLogo");
 
     public static boolean isLogoRendering = false;
 
-    public static String[] logo = new String[]{
+    public static ConfigKey<String[]> logo = ConfigKey.stringArray("logo.lines", new String[]{
             " *   * * *   * *** *** *** *** *** ***",
             " ** ** * **  * *   *   * * * * *    * ",
             " * * * * * * * **  *   **  *** **   * ",
             " *   * * *  ** *   *   * * * * *    * ",
             " *   * * *   * *** *** * * * * *    * "
-    };
-    public static Map<Character, Integer> blockMap;
+    });
+    public static ConfigKey<float[]> logoRotation = ConfigKey.floatArray("logo.rotation", new float[]{ 15f, 0, 0 });
+    public static ConfigKey<Map<Character, Integer>> blockMap;
+    public static ConfigKey<Boolean> invertedBlocks = ConfigKey.bool("blocks.inverted", true);
+    public static ConfigKey<Boolean> scrollingBackground = ConfigKey.bool("scrollingBackground.enabled", false);
+    public static ConfigKey<Double> scrollingBackgroundSpeed = ConfigKey.doubleVal("scrollingBackground.speed", 0.1);
+    public static ConfigKey<Boolean> scrollingBackgroundRestricted = ConfigKey.bool("scrollingBackground.onlyTitle", false);
+
+    static {
+        Map<Character, Integer> defaultMap = new LinkedHashMap<>();
+        defaultMap.put('*', 1);
+
+        blockMap = ConfigKey.charMap("blocks.map", defaultMap);
+    }
 
     @Override
     public void onInitialize() {
-        loadConfig();
-    }
 
-    private void loadConfig() {
-        CONFIG.setIfAbsent("logo", logo);
-
-        CONFIG.setIfAbsent("scrollingBackground.enabled", true);
-        CONFIG.setIfAbsent("scrollingBackground.onlyTitle", false);
-
-        Map<Character, Integer> defaultBlockMap = new HashMap<>();
-        defaultBlockMap.put('*', 1);
-
-        logo = (String[]) CONFIG.get("logo", logo);
-        blockMap = CONFIG.getCharMapping("blockMapping", defaultBlockMap);
-    }
-
-    public static Config getConfig() {
-        return CONFIG;
     }
 }
