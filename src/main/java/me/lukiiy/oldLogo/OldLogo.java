@@ -27,6 +27,9 @@ public class OldLogo implements ModInitializer {
     public static ConfigKey<Boolean> scrollingBackground = ConfigKey.bool("scrollingBackground.enabled", false);
     public static ConfigKey<Double> scrollingBackgroundSpeed = ConfigKey.doubleVal("scrollingBackground.speed", 0.1);
     public static ConfigKey<Boolean> scrollingBackgroundRestricted = ConfigKey.bool("scrollingBackground.onlyTitle", false);
+    public static ConfigKey<Boolean> shadow = ConfigKey.bool("logo.shadow", true);
+    public static ConfigKey<Boolean> animation = ConfigKey.bool("logo.animation.enabled", true);
+    public static ConfigKey<Double> animationSpeed = ConfigKey.doubleVal("logo.animation.speed", 1);
 
     static {
         Map<Character, Integer> defaultMap = new LinkedHashMap<>();

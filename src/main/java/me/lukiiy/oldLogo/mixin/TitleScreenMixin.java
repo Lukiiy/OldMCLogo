@@ -36,7 +36,7 @@ public class TitleScreenMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void oldLogo$tick(CallbackInfo ci) {
-        if (logoEffects == null) return;
+        if (logoEffects == null || !OldLogo.animation.get()) return;
 
         for (LogoEffectRandomizer[] logoEffect : logoEffects) {
             for (LogoEffectRandomizer logoEffectRandomizer : logoEffect) logoEffectRandomizer.tick();
@@ -54,7 +54,7 @@ public class TitleScreenMixin {
             logoEffects = new LogoEffectRandomizer[logo[0].length()][logo.length];
 
             for (int x = 0; x < logoEffects.length; x++) {
-                for (int y = 0; y < logoEffects[x].length; y++) logoEffects[x][y] = new LogoEffectRandomizer(RANDOM, x, y);
+                for (int y = 0; y < logoEffects[x].length; y++) logoEffects[x][y] = new LogoEffectRandomizer(RANDOM, x, y, OldLogo.animationSpeed.get().floatValue());
             }
         }
 
@@ -71,7 +71,6 @@ public class TitleScreenMixin {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glCullFace(GL11.GL_BACK);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -81,6 +80,8 @@ public class TitleScreenMixin {
         class_13 blockRenderer = new class_13();
 
         for (int pass = 0; pass < 3; pass++) {
+            if (pass == 0 && !OldLogo.shadow.get()) continue;
+
             GL11.glPushMatrix();
             GL11.glTranslatef(.4f, .6f, -13f);
 
@@ -124,8 +125,10 @@ public class TitleScreenMixin {
                     GL11.glPushMatrix();
                     LogoEffectRandomizer effect = logoEffects[x][y];
 
-                    float z = (float) (effect.current + (effect.target - effect.current) * delta);
+                    float z = 0.0f;
                     float scale = 1;
+
+                    if (OldLogo.animation.get()) z = (float) (effect.current + (effect.target - effect.current) * delta);
                     if (pass == 0) {
                         scale = z * .04f + 1;
                         z = 0;
@@ -136,7 +139,6 @@ public class TitleScreenMixin {
                     if (!OldLogo.invertedBlocks.get()) GL11.glRotatef(180f, 1, 0, 0);
 
                     blockRenderer.method_48(block, 0, .77f);
-
                     GL11.glPopMatrix();
                 }
             }
