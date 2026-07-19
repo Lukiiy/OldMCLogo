@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 
-@Mixin(TitleScreen.class)
+@Mixin(value = TitleScreen.class, priority = 56676)
 public class TitleScreenMixin {
     @Shadow @Final private static Random RANDOM;
 
